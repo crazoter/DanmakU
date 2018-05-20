@@ -42,6 +42,7 @@ public class DanmakuCollider : MonoBehaviour {
     HighestLayer = -1;
     bool globalInit = false;
     foreach (var collider in Colliders) {
+      //print("RebuildSpatialHashes:"+collider);
       if (collider != null && collider.isActiveAndEnabled) {
         var layer = collider.gameObject.layer;
         Data[layer].Add(collider.data.Bounds);
@@ -102,15 +103,20 @@ public class DanmakuCollider : MonoBehaviour {
   }
 
   internal static unsafe void TestPoolCollisions(DanmakuPool pool) {
+    //print("TestPoolCollisions");
     var layersPtr = (int*)(pool.CollisionMasks.GetUnsafePtr());
     var count = pool.ActiveCount;
+    //print("TestPoolCollisions:"+*layersPtr+" "+count);
     for (var i = 0; i < count; i++) {
       if (*layersPtr++ == 0) continue;
-      var layerMask = pool.CollisionMasks[i];
+      var layerMask = pool.CollisionLayer;
+      //var layerMask = pool.CollisionMasks[i];
       var oldPosition = pool.OldPositions[i];
       var direction = pool.Positions[i] - oldPosition;
       var distance = direction.magnitude;
+      //print("Distance "+distance+" Min: "+layerMask+" Max: "+layerMask);
       var hits = Physics2D.CircleCastNonAlloc(oldPosition, pool.ColliderRadius, direction, raycastCache, distance, layerMask);
+      //print(hits);
       if (hits <= 0) continue;
       var danmaku = new Danmaku(pool, i);
       for (var j = 0; j < hits; j++) {
@@ -138,6 +144,7 @@ public class DanmakuCollider : MonoBehaviour {
 
   internal void AddDanmaku(DanmakuCollision danmaku) => collidedDanmaku.Add(danmaku);
   internal void Flush() {
+    //print("Flush:"+collidedDanmaku.Count+" "+(OnDanmakuCollision != null));
     if (collidedDanmaku.Count > 0 && OnDanmakuCollision != null) {
       OnDanmakuCollision(collidedDanmaku.AsReadOnly());
     }

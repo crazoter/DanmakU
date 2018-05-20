@@ -40,6 +40,7 @@ public class DanmakuManager : MonoBehaviour {
   /// Awake is called when the script instance is being loaded.
   /// </summary>
   void Awake() {
+    //print("Awake:-"+gameObject.layer);
     Instance = this;
     RendererGroups = new Dictionary<DanmakuRendererConfig, RendererGroup>();
     Camera.onPreCull += RenderBullets;
@@ -61,13 +62,19 @@ public class DanmakuManager : MonoBehaviour {
   /// </summary>
   void Update() {
     UpdateHandle.Complete();
+    //print("Update:-");
     if (DanmakuCollider.ColliderCount <= 0) return;
+    //print("DanmakuCollider.ColliderCount:"+DanmakuCollider.ColliderCount);
+    int w=0, j = 0;
     foreach (var group in RendererGroups.Values) {
+      w++;
       foreach (var set in group.Sets) {
+        j++;
         DanmakuCollider.TestPoolCollisions(set.Pool);
       }
     }
     DanmakuCollider.FlushAll();
+    //print("FlushAll:"+w+' '+j);
   }
 
   /// <summary>
@@ -75,6 +82,7 @@ public class DanmakuManager : MonoBehaviour {
   /// It is called after all Update functions have been called.
   /// </summary>
   void LateUpdate() {
+    //print("LateUpdate:-");
     DanmakuCollider.RebuildSpatialHashes();
     UpdateHandle = default(JobHandle);
     foreach (var group in RendererGroups.Values) {
@@ -108,18 +116,21 @@ public class DanmakuManager : MonoBehaviour {
   void RenderBullets(Camera camera) {
     UpdateHandle.Complete();
     foreach (var group in RendererGroups.Values) {
+      //print("RenderBulletGroup: "+group);
       group.Render(gameObject.layer);
     }
   }
 
   internal DanmakuSet CreateDanmakuSet(DanmakuRendererConfig config, DanmakuPool pool) {
+    print("CreateDanmakuSet:-");
     var set = new DanmakuSet(pool);
     var group = GetOrCreateRendererGroup(config);
     group.AddSet(set);
     return set;
   }
 
-  internal void DestroyDanmakuSet(DanmakuSet set) {
+  public void DestroyDanmakuSet(DanmakuSet set) {
+    //print("DestroyDanmakuSet:-");
     EmptyGroups = EmptyGroups ?? new List<DanmakuRendererConfig>();
     foreach (var kvp in RendererGroups) {
       var group = kvp.Value;
@@ -135,6 +146,7 @@ public class DanmakuManager : MonoBehaviour {
   }
 
   RendererGroup GetOrCreateRendererGroup(DanmakuRendererConfig config) {
+    print("RendererGroup");
     RendererGroup group = null;
     if (!RendererGroups.TryGetValue(config, out group)) {
       group = CreateRendererGroup(config);
@@ -144,6 +156,7 @@ public class DanmakuManager : MonoBehaviour {
   }
 
   RendererGroup CreateRendererGroup(DanmakuRendererConfig config) {
+    print("CreateRendererGroup");
     DanmakuRenderer renderer;
     if (config.Sprite != null) {
       renderer = new SpriteDanmakuRenderer(config.Material, config.Sprite);
@@ -181,11 +194,13 @@ public class DanmakuManager : MonoBehaviour {
     }
 
     public void Render(int layer) {
+      //print(Sets.Count);
       Renderer.FlushBuffers();
       Renderer.Render(Sets, layer);
     }
 
     public void Dispose() {
+      print("Dispose:");
       Renderer.Dispose();
       Sets.Clear();
       foreach (var set in Sets) {

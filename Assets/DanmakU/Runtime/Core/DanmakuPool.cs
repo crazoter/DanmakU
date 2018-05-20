@@ -141,6 +141,8 @@ public class DanmakuPool : IEnumerable<Danmaku>, IDisposable {
   internal NativeArray<Vector2> OldPositions;
   internal NativeArray<int> CollisionMasks;
 
+  internal int CollisionLayer;
+
   internal DanmakuPool(int poolSize) {
     activeCountArray = new NativeArray<int>(1, Allocator.Persistent);
     Capacity = poolSize;

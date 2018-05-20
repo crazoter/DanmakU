@@ -21,9 +21,10 @@ public abstract class DanmakuBehaviour : MonoBehaviour {
   /// </summary>
   /// <param name="prefab">the base prefab to create a set from.</param>
   /// <returns>the created DanmakuSet.</returns>
-  protected DanmakuSet CreateSet(DanmakuPrefab prefab) {
+  protected DanmakuSet CreateSet(DanmakuPrefab prefab,int layer=0) {
     var pool = new DanmakuPool(prefab.DefaultPoolSize);
     pool.ColliderRadius = prefab.ColliderRadius;
+    pool.CollisionLayer = layer;
     var set = DanmakuManager.Instance.CreateDanmakuSet(prefab.GetRendererConfig(), pool);
     (OwnedDanmakuSets ?? (OwnedDanmakuSets = new List<DanmakuSet>())).Add(set);
     set.AddModifiers(prefab.GetModifiers());

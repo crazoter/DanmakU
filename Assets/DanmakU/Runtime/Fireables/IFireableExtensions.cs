@@ -35,6 +35,7 @@ public static class FireableExtensions {
   }
 
   public static Fireable Of(this Fireable fireable, IFireable subemitter) {
+    Debug.Log("test 1 ");
     if (fireable == null) {
       throw new ArgumentNullException("fireable");
     }
@@ -44,14 +45,17 @@ public static class FireableExtensions {
   }
 
   public static Fireable Of(this Fireable fireable, FireAction fireAction) {
+    Debug.Log("test 2");
     return fireable.Of(new FuncFireable(fireAction));
   }
 
   public static Fireable Of(this Fireable fireable, IEnumerable<IFireable> subemitters) {
+    Debug.Log("test 3 ");
     return fireable.Of(new RandomSubemitterFireable(subemitters));
   }
 
   public static Fireable Of(this Fireable fireable, params IFireable[] subemitters) {
+      Debug.Log("test 4 ");
       return fireable.Of(new RandomSubemitterFireable(subemitters));
   }
 

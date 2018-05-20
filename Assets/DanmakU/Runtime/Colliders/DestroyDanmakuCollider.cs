@@ -13,7 +13,6 @@ public class DestroyDanmakuCollider : MonoBehaviour {
   /// </summary>
   void OnEnable() {
     if (Collider != null) {
-      Debug.Log("Subscribed");
       Collider.OnDanmakuCollision += OnDanmakuCollision;
     }
   }
@@ -28,7 +27,9 @@ public class DestroyDanmakuCollider : MonoBehaviour {
   }
 
   void OnDanmakuCollision(DanmakuCollisionList collisions) {
+    print("OnDanmakuCollision:-");
     foreach (var collision in collisions) {
+      //print("OnDanmakuCollision:"+collision);
       collision.Danmaku.Destroy();
     }
   }
